@@ -1,7 +1,13 @@
 var Backbone = require('backbone');
 
 var ParseModel = Backbone.Model.extend({
-  idAttribute: 'objectId'
+  idAttribute: 'objectId',
+  save: function(key, val, options){
+    delete this.attributes.createdAt;
+    delete this.attributes.updatedAt;
+
+    return Backbone.Model.prototype.save.apply(this, arguments);
+  }
 });
 
 var ParseCollection = Backbone.Collection.extend({
@@ -32,9 +38,37 @@ var ParseCollection = Backbone.Collection.extend({
   }
 });
 
+var Ingredient = ParseModel.extend({
+  defaults: {
+    name: '',
+    amount: 0,
+    units: '',
+  },
+});
+
+var IngredientCollection = ParseCollection.extend({
+  model: Ingredient,
+  baseUrl: 'https://megatron42.herokuapp.com/classes/Ingredient'
+});
+
 var Recipe = ParseModel.extend({
   defaults: {
-    ingredients: []
+    ingredients: new IngredientCollection()
+  },
+
+  urlRoot: 'https://megatron42.herokuapp.com/classes/Recipe',
+
+  save: function(key, val, options){
+    // Convert ingredients collection to array for parse
+    this.set('ingredients', this.get('ingredients').toJSON());
+
+    return ParseModel.prototype.save.apply(this, arguments);
+  },
+
+  parse: function(data){
+    // Convert ingredients array from parse to collection
+    data.ingredients = new IngredientCollection(data.ingredients);
+    return data;
   }
 });
 
@@ -43,14 +77,6 @@ var RecipeCollection = ParseCollection.extend({
   url: 'https://megatron42.herokuapp.com/classes/Recipe'
 });
 
-var Ingredient = ParseModel.extend({
-
-});
-
-var IngredientCollection = ParseCollection.extend({
-  model: Ingredient,
-  baseUrl: 'https://megatron42.herokuapp.com/classes/Ingredient'
-});
 
 module.exports = {
   Recipe: Recipe,
