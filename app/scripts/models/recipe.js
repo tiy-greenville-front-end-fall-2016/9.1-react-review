@@ -53,6 +53,7 @@ var IngredientCollection = ParseCollection.extend({
 
 var Recipe = ParseModel.extend({
   defaults: {
+    servings: 0,
     ingredients: new IngredientCollection()
   },
 

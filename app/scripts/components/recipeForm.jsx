@@ -7,6 +7,13 @@ var BaseLayout = require('./templates/base.jsx');
 var IngredientForm = React.createClass({
     getInitialState: function(){
       return this.props.ingredient.toJSON();
+      // {
+      //   name: this.props.ingredient.get('name'),
+      //   units: this.props.ingredient.get('units'),
+      //   amount: this.props.ingredient.get('amount')
+      // };
+
+
     },
 
     componentWillReceiveProps: function(newProps){
@@ -14,14 +21,14 @@ var IngredientForm = React.createClass({
     },
 
     handleInputChange: function(e){
-      var target = e.target;
+      var ingredientField = e.target;
+
 
       var newState = {};
-      newState[target.name] = target.value;
-
-      this.props.ingredient.set(target.name, target.value);
-
+      newState[ingredientField.name] = ingredientField.value; // {'amount': 24}
       this.setState(newState);
+
+      this.props.ingredient.set(ingredientField.name, ingredientField.value);
     },
     render: function(){
       return (

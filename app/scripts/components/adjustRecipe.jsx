@@ -5,12 +5,12 @@ var models = require('../models/recipe');
 var AdjustmentForm = React.createClass({
   getInitialState: function(){
     return {
-      qty: 1
+      qty: this.props.recipe.get('servings')
     };
   },
 
   componentWillReceiveProps: function(nextProps){
-    this.setState({qty: nextProps.qty});
+    this.setState({qty: nextProps.recipe.get('servings')});
   },
 
   handleQty: function(e){
@@ -63,20 +63,19 @@ var IngredientList = React.createClass({
 var AdjustRecipeContainer = React.createClass({
   getInitialState: function(){
     return {
-      factor: 1,
-      servings: 0
+      factor: 1
     };
   },
 
-  componentWillReceiveProps: function(nextProps){
-    this.setState({servings: nextProps.recipe.get('servings')});
-  },
+  // componentWillReceiveProps: function(nextProps){
+  //   this.setState({servings: nextProps.recipe.get('servings')});
+  // },
 
   adjustQtys: function(newServings){
     var recipe = this.props.recipe;
     var newFactor = (newServings / recipe.get('servings')) || 1;
 
-    this.setState({servings: newServings, factor: newFactor});
+    this.setState({factor: newFactor});
   },
 
   render: function(){
@@ -84,7 +83,7 @@ var AdjustRecipeContainer = React.createClass({
 
     return (
       <div>
-        <AdjustmentForm qty={this.state.servings} adjustQtys={this.adjustQtys}/>
+        <AdjustmentForm recipe={this.props.recipe} adjustQtys={this.adjustQtys}/>
 
         <p className="lead">Ingredients</p>
 
