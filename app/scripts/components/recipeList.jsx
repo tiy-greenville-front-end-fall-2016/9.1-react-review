@@ -38,6 +38,7 @@ var RecipeListContainer = React.createClass({
 
   componentWillMount: function(){
     var recipeCollection = this.state.recipeCollection;
+    //.parseWhere('user', 'User', User.current().get('objectId'))
     recipeCollection.fetch().then(() => {
       this.setState({recipeCollection: recipeCollection});
     });

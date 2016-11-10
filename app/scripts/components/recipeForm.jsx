@@ -13,7 +13,6 @@ var IngredientForm = React.createClass({
       //   amount: this.props.ingredient.get('amount')
       // };
 
-
     },
 
     componentWillReceiveProps: function(newProps){
@@ -172,3 +171,28 @@ var RecipeAddEditContainer = React.createClass({
 module.exports = {
   RecipeAddEditContainer: RecipeAddEditContainer
 };
+
+
+/*
+// Get Initial State
+var ingredients = new IngredientCollection();
+var recipe = new Recipe();
+
+// Input Event Handlers
+recipe.set('name', 'Pudding');
+recipe.set('user', {"__type":"Pointer","className":"User","objectId": user.get('objectId')});
+ingredients.add({amount: 1, units: 'cups', name: 'milk'});
+
+recipe.save().then(function(){
+  ingredients.each(function(ingredient){
+    ingredient.set('recipe', {"__type":"Pointer","className":"Recipe","objectId":recipe.get('objectId')});
+    ingredient.save();
+  });
+});
+
+
+var user = User.current();
+
+recipe.set('user', {"__type":"Pointer","className":"User","objectId": user.get('objectId')})
+recipe.save()
+*/
