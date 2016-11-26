@@ -1,11 +1,11 @@
-var $ = require('jquery');
+// var ParseUser = require('../parseUtilities').ParseUser;
 var Backbone = require('backbone');
-
 
 function setParseHeaders(xhr, appId, apiKey){
   xhr.setRequestHeader("X-Parse-Application-Id", appId);
   xhr.setRequestHeader("X-Parse-REST-API-Key", apiKey);
 }
+
 
 var ParseUser = Backbone.Model.extend({
   auth: function(){
@@ -23,13 +23,14 @@ var ParseUser = Backbone.Model.extend({
   },
 
 }, {
-  login: function(username, password, callbackObj){
+  login: function(username, password, callback){
     //callbackObj.success and callbackObj.error
-    $.post('/login/', {username: username, password: password}).then(function(response){
+
+    $.get('https://megatron42.herokuapp.com/login/?username=' + username + '&password=' + password).then(function(response){
       var user = new User(response);
       user.auth();
       localStorage.setItem('user', JSON.stringify(user.toJSON()));
-      callbackObj.success(user, response);
+      callback(user, response);
     });
   },
   signUp: function(username, password, callback){
@@ -44,7 +45,7 @@ var ParseUser = Backbone.Model.extend({
   current: function(){
     var userData = localStorage.getItem('user');
 
-    if(!userData || !JSON.parse(userData).token){
+    if(!userData || !JSON.parse(userData).sessionToken){
       return undefined;
     }
 
@@ -52,7 +53,11 @@ var ParseUser = Backbone.Model.extend({
   }
 });
 
+
+var User = ParseUser.extend({
+  urlRoot: 'https://megatron42.herokuapp.com/users/'
+});
+
 module.exports = {
-  ParseUser: ParseUser,
-  setParseHeaders: setParseHeaders
+  User: User
 };

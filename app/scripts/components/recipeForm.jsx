@@ -1,6 +1,7 @@
 var React = require('react');
 var Backbone = require('backbone');
 
+var User = require('../models/user').User;
 var models = require('../models/recipe');
 var BaseLayout = require('./templates/base.jsx');
 
@@ -148,14 +149,44 @@ var RecipeAddEditContainer = React.createClass({
   },
 
   saveRecipe: function(recipeData){
-    var recipe = this.state.recipe;
+    var recipe = new models.Recipe();
+    recipe.set('name', recipeData.name);
+    var user =  User.current(); // new User(localStorage.getItem('user'));
 
-    // take current recipe state and set it to model
-    recipe.set(recipeData);
+    console.log(user);
+    console.log(user.get('objectId'));
+
+    recipe.set('user', {
+      '__type': 'Pointer',
+      'className': '_User',
+      'objectId': user.get('objectId')
+    });
+
+    recipe.setPointer('user', '_User', user.get('objectId'));
 
     recipe.save().then(() => {
       Backbone.history.navigate('recipes/' + recipe.get('objectId') + '/', {trigger: true});
-    });
+    });;
+
+
+
+
+
+
+
+    // Existing code
+    // var recipe = this.state.recipe;
+    // var currentUser = User.current();
+    //
+    // recipeData.servings = parseInt(recipeData.servings);
+    //
+    // // take current recipe state and set it to model
+    // recipe.set(recipeData);
+    // recipe.setPointer('user', '_User', currentUser.get('objectId'));
+    //
+    // recipe.save().then(() => {
+    //   Backbone.history.navigate('recipes/' + recipe.get('objectId') + '/', {trigger: true});
+    // });
   },
 
   render: function(){

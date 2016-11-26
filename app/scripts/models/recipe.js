@@ -7,28 +7,41 @@ var ParseModel = Backbone.Model.extend({
     delete this.attributes.updatedAt;
 
     return Backbone.Model.prototype.save.apply(this, arguments);
+  },
+  setPointer: function(field, className, objectId){
+    var pointer = {
+      '__type': 'Pointer',
+      'className': className,
+      'objectId': objectId
+    };
+
+    this.set(field, pointer);
+
+    return this;
   }
 });
 
 var ParseCollection = Backbone.Collection.extend({
-  whereClause: {field: '', className: '', objectId: ''},
+  whereClauses: [],
   parseWhere: function(field, className, objectId){
-    this.whereClause = {
+
+    this.whereClauses.push({
       field: field,
       className: className,
       objectId: objectId,
       '__type': 'Pointer'
-    };
+    });
 
     return this;
   },
   url: function(){
     var url = this.baseUrl;
 
-    if(this.whereClause.field){
+    if(this.whereClause.length > 0){
       var field = this.whereClause.field;
       delete this.whereClause.field;
       url += '?where={"' + field + '":' + JSON.stringify(this.whereClause) + '}';
+      this.whereClauses = [];
     }
 
     return url;
@@ -57,7 +70,8 @@ var Recipe = ParseModel.extend({
     ingredients: new IngredientCollection()
   },
 
-  urlRoot: 'https://megatron42.herokuapp.com/classes/Recipe',
+  // urlRoot: 'https://megatron42.herokuapp.com/classes/Recipe',
+  urlRoot: 'https://megatron42.herokuapp.com/classes/RecipeReview',
 
   save: function(key, val, options){
     // Convert ingredients collection to array for parse
@@ -73,9 +87,15 @@ var Recipe = ParseModel.extend({
   }
 });
 
-var RecipeCollection = ParseCollection.extend({
+var RecipeCollection = Backbone.Collection.extend({
   model: Recipe,
-  url: 'https://megatron42.herokuapp.com/classes/Recipe'
+  url: function(){
+    console.log(this.objectId);
+    var querystring = '?where={"user": ' +
+                      '{"__type": "Pointer", "className": "_User", "objectId": "' +
+                      this.objectId + '"}}';
+    return 'https://megatron42.herokuapp.com/classes/RecipeReview/' + querystring;
+  }
 });
 
 

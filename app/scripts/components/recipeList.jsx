@@ -1,5 +1,6 @@
 var React = require('react');
 
+var User = require('../models/user').User;
 var models = require('../models/recipe');
 var BaseLayout = require('./templates/base.jsx');
 
@@ -53,6 +54,49 @@ var RecipeListContainer = React.createClass({
   }
 });
 
+var MyRecipeListContainer = React.createClass({
+  getInitialState: function(){
+    return {
+      recipeCollection: new models.RecipeCollection()
+    };
+  },
+
+  componentWillMount: function(){
+    var self = this;
+    var recipeCollection = new models.RecipeCollection();
+    var user = localStorage.getItem('user');
+    recipeCollection.objectId = user.objectId;
+    recipeCollection.parseWhere('user', '_User', User.current().get('objectId'))
+
+    recipeCollection.fetch().then(function(){
+      self.setState({'recipeCollection': recipeCollection});
+    });
+
+
+
+
+
+    // Existing code
+    // var recipeCollection = this.state.recipeCollection;
+    // var user = User.current();
+    //
+    // console.log(user);
+    //
+    // recipeCollection.parseWhere('user', '_User', user.get('objectId')).fetch().then(() => {
+    //   this.setState({recipeCollection: recipeCollection});
+    // });
+  },
+
+  render: function(){
+    return (
+      <BaseLayout>
+        <List recipes={this.state.recipeCollection}/>
+      </BaseLayout>
+    )
+  }
+});
+
 module.exports = {
-  RecipeListContainer: RecipeListContainer
+  RecipeListContainer: RecipeListContainer,
+  MyRecipeListContainer: MyRecipeListContainer
 };
